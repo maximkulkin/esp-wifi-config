@@ -180,7 +180,7 @@ static void wifi_scan_task(void *arg)
 }
 
 const char *index_html[] = {
-#include "content/index.h"
+#include "index.h"
 };
 
 static void wifi_config_server_on_settings(client_t *client) {
