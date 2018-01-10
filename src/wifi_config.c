@@ -491,8 +491,13 @@ static void wifi_config_softap_start(wifi_config_context_t *context) {
     );
     softap_config.ssid_hidden = 0;
     softap_config.channel = 3;
-    softap_config.authmode = AUTH_WPA_WPA2_PSK;
-    strncpy((char *)softap_config.password, context->password, sizeof(softap_config.password));
+    if (context->password) {
+        softap_config.authmode = AUTH_WPA_WPA2_PSK;
+        strncpy((char *)softap_config.password,
+                context->password, sizeof(softap_config.password));
+    } else {
+        softap_config.authmode = AUTH_OPEN;
+    }
     softap_config.max_connection = 2;
     softap_config.beacon_interval = 100;
 
