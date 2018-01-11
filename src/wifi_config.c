@@ -179,42 +179,38 @@ static void wifi_scan_task(void *arg)
     vTaskDelete(NULL);
 }
 
-const char *index_html[] = {
-#include "index.h"
-};
+#include "index.html.h"
 
 static void wifi_config_server_on_settings(client_t *client) {
     static const char http_prologue[] =
         "HTTP/1.1 200 \r\n"
-        "Content-Type: text/html\r\n"
+        "Content-Type: text/html; charset=utf-8\r\n"
         "Cache-Control: no-store\r\n"
         "Transfer-Encoding: chunked\r\n"
         "Connection: close\r\n"
         "\r\n";
 
     client_send(client, http_prologue, sizeof(http_prologue)-1);
-    client_send_chunk(client, index_html[0]);
+    client_send_chunk(client, html_settings_header);
 
     char buffer[64];
-    if (xSemaphoreTake(wifi_networks_mutex, 5000 / portTICK_PERIOD_MS) && wifi_networks) {
-        client_send_chunk(client, index_html[1]);
-
+    if (xSemaphoreTake(wifi_networks_mutex, 5000 / portTICK_PERIOD_MS)) {
         wifi_network_info_t *net = wifi_networks;
         while (net) {
-            snprintf(buffer, sizeof(buffer), index_html[2], net->secure ? "" : "un", net->ssid);
+            snprintf(
+                buffer, sizeof(buffer),
+                html_network_item,
+                net->secure ? "secure" : "unsecure", net->ssid
+            );
             client_send_chunk(client, buffer);
 
             net = net->next;
         }
 
-        client_send_chunk(client, index_html[3]);
-
         xSemaphoreGive(wifi_networks_mutex);
-    } else {
-        client_send_chunk(client, "<p>No networks found</p>");
     }
 
-    client_send_chunk(client, index_html[4]);
+    client_send_chunk(client, html_settings_footer);
     client_send_chunk(client, "");
 }
 
