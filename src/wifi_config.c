@@ -16,6 +16,10 @@
 
 #define WIFI_CONFIG_SERVER_PORT 80
 
+#ifndef WIFI_CONFIG_CONNECT_TIMEOUT
+#define WIFI_CONFIG_CONNECT_TIMEOUT 15000
+#endif
+
 #define DEBUG(message, ...) printf(">>> wifi_config: %s: " message "\n", __func__, ##__VA_ARGS__);
 #define INFO(message, ...) printf(">>> wifi_config: " message "\n", ##__VA_ARGS__);
 #define ERROR(message, ...) printf("!!! wifi_config: " message "\n", ##__VA_ARGS__);
@@ -33,6 +37,7 @@ typedef struct {
     bool active;
     char *ssid_prefix;
     char *password;
+    TickType_t connect_start_time;
     void (*on_wifi_ready)();
     ETSTimer sta_connect_timeout;
 } wifi_config_context_t;
@@ -535,11 +540,11 @@ static void wifi_config_softap_stop(wifi_config_context_t *context) {
 static void wifi_config_sta_connect_timeout_callback(void *arg) {
     wifi_config_context_t *context = arg;
 
-    sdk_os_timer_disarm(&context->sta_connect_timeout);
-
     if (sdk_wifi_station_get_connect_status() == STATION_GOT_IP) {
         // Connected to station, all is dandy
         DEBUG("Successfully connected");
+        sdk_os_timer_disarm(&context->sta_connect_timeout);
+
         wifi_config_softap_stop(context);
         if (context->on_wifi_ready)
             context->on_wifi_ready();
@@ -547,6 +552,12 @@ static void wifi_config_sta_connect_timeout_callback(void *arg) {
         return;
     }
 
+    if ((xTaskGetTickCount() - context->connect_start_time) * portTICK_PERIOD_MS < WIFI_CONFIG_CONNECT_TIMEOUT) {
+        // Still have time, continue trying
+        return;
+    }
+
+    sdk_os_timer_disarm(&context->sta_connect_timeout);
     DEBUG("Timeout connecting to WiFi network, starting config AP");
     // Not connected to station, launch configuration AP
     wifi_config_softap_start(context);
@@ -584,8 +595,9 @@ static int wifi_config_station_connect(wifi_config_context_t *context) {
     if (wifi_password)
         free(wifi_password);
 
+    context->connect_start_time = xTaskGetTickCount();
     sdk_os_timer_setfn(&context->sta_connect_timeout, wifi_config_sta_connect_timeout_callback, context);
-    sdk_os_timer_arm(&context->sta_connect_timeout, 15000, 1);
+    sdk_os_timer_arm(&context->sta_connect_timeout, 500, 1);
 
     return 0;
 }
