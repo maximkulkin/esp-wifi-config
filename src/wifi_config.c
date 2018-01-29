@@ -577,7 +577,7 @@ static int wifi_config_station_connect(wifi_config_context_t *context) {
         return -1;
     }
 
-    INFO("Found configuration, connecting to %s (password = %s)", wifi_ssid, wifi_password);
+    INFO("Found configuration, connecting to %s", wifi_ssid);
 
     struct sdk_station_config sta_config;
     memset(&sta_config, 0, sizeof(sta_config));
