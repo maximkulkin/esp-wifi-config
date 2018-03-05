@@ -34,18 +34,22 @@ typedef enum {
 
 
 typedef struct {
-    bool active;
     char *ssid_prefix;
     char *password;
-    TickType_t connect_start_time;
     void (*on_wifi_ready)();
+
+    TickType_t connect_start_time;
     ETSTimer sta_connect_timeout;
+    TaskHandle_t http_task_handle;
+    TaskHandle_t dns_task_handle;
 } wifi_config_context_t;
+
+
+static wifi_config_context_t *context;
 
 
 typedef struct _client {
     int fd;
-    wifi_config_context_t *context;
 
     http_parser parser;
     endpoint_t endpoint;
@@ -54,9 +58,9 @@ typedef struct _client {
 } client_t;
 
 
-static int wifi_config_station_connect(wifi_config_context_t *context);
-static void wifi_config_softap_start(wifi_config_context_t *context);
-static void wifi_config_softap_stop(wifi_config_context_t *context);
+static int wifi_config_station_connect();
+static void wifi_config_softap_start();
+static void wifi_config_softap_stop();
 
 static client_t *client_new() {
     client_t *client = malloc(sizeof(client_t));
@@ -246,7 +250,7 @@ static void wifi_config_server_on_settings_update(client_t *client) {
 
     vTaskDelay(500 / portTICK_PERIOD_MS);
 
-    wifi_config_station_connect(client->context);
+    wifi_config_station_connect();
 }
 
 
@@ -327,11 +331,8 @@ static http_parser_settings wifi_config_http_parser_settings = {
 };
 
 
-
 static void http_task(void *arg) {
     INFO("Staring HTTP server");
-
-    wifi_config_context_t *context = arg;
 
     struct sockaddr_in serv_addr;
     int listenfd = socket(AF_INET, SOCK_STREAM, 0);
@@ -339,23 +340,45 @@ static void http_task(void *arg) {
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
     serv_addr.sin_port = htons(WIFI_CONFIG_SERVER_PORT);
+    int flags;
+    if ((flags = lwip_fcntl(listenfd, F_GETFL, 0)) < 0) {
+        ERROR("Failed to get HTTP socket flags");
+        lwip_close(listenfd);
+        vTaskDelete(NULL);
+        return;
+    };
+    if (lwip_fcntl(listenfd, F_SETFL, flags | O_NONBLOCK) < 0) {
+        ERROR("Failed to set HTTP socket flags");
+        lwip_close(listenfd);
+        vTaskDelete(NULL);
+        return;
+    }
     bind(listenfd, (struct sockaddr*)&serv_addr, sizeof(serv_addr));
     listen(listenfd, 2);
 
     char data[64];
 
-    for (;;) {
-        int fd = accept(listenfd, (struct sockaddr *)NULL, (socklen_t *)NULL);
-        if (fd < 0)
-            continue;
+    bool running = true;
+    while (running) {
+        uint32_t task_value = 0;
+        if (xTaskNotifyWait(0, 1, &task_value, 0) == pdTRUE) {
+            if (task_value) {
+                running = false;
+                break;
+            }
+        }
 
-        const struct timeval timeout = { 10, 0 }; /* 10 second timeout */
+        int fd = accept(listenfd, (struct sockaddr *)NULL, (socklen_t *)NULL);
+        if (fd < 0) {
+            vTaskDelay(500 / portTICK_PERIOD_MS);
+            continue;
+        }
+
+        const struct timeval timeout = { 2, 0 }; /* 2 second timeout */
         setsockopt(fd, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout));
-        setsockopt(fd, SOL_SOCKET, SO_SNDTIMEO, &timeout, sizeof(timeout));
 
         client_t *client = client_new();
         client->fd = fd;
-        client->context = context;
 
         for (;;) {
             int data_len = lwip_read(client->fd, data, sizeof(data));
@@ -372,27 +395,42 @@ static void http_task(void *arg) {
                 );
             }
 
-            if (sdk_wifi_get_opmode() != STATIONAP_MODE)
-                break;
+            if (xTaskNotifyWait(0, 1, &task_value, 0) == pdTRUE) {
+                if (task_value) {
+                    running = false;
+                    break;
+                }
+            }
         }
 
         INFO("Client disconnected");
 
         lwip_close(client->fd);
         client_free(client);
-
-        if (!context->active)
-            break;
     }
 
+    INFO("Stopping HTTP server");
+
+    lwip_close(listenfd);
     vTaskDelete(NULL);
 }
 
 
-void dns_task(void *arg)
-{
-    wifi_config_context_t *context = arg;
+static void http_start() {
+    xTaskCreate(http_task, "wifi_config HTTP", 512, NULL, 2, &context->http_task_handle);
+}
 
+
+static void http_stop() {
+    if (! context->http_task_handle)
+        return;
+
+    xTaskNotify(context->http_task_handle, 1, eSetValueWithOverwrite);
+}
+
+
+static void dns_task(void *arg)
+{
     INFO("Starting DNS server");
 
     ip4_addr_t server_addr;
@@ -406,6 +444,9 @@ void dns_task(void *arg)
     serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
     serv_addr.sin_port = htons(53);
     bind(fd, (struct sockaddr*)&serv_addr, sizeof(serv_addr));
+
+    const struct timeval timeout = { 2, 0 }; /* 2 second timeout */
+    setsockopt(fd, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout));
 
     const struct ifreq ifreq1 = { "en1" };
     setsockopt(fd, SOL_SOCKET, SO_BINDTODEVICE, &ifreq1, sizeof(ifreq1));
@@ -457,11 +498,31 @@ void dns_task(void *arg)
             sendto(fd, buffer, reply_len, 0, &src_addr, src_addr_len);
         }
 
-        if (!context->active)
-            break;
+        uint32_t task_value = 0;
+        if (xTaskNotifyWait(0, 1, &task_value, 0) == pdTRUE) {
+            if (task_value)
+                break;
+        }
     }
 
+    INFO("Stopping DNS server");
+
+    lwip_close(fd);
+
     vTaskDelete(NULL);
+}
+
+
+static void dns_start() {
+    xTaskCreate(dns_task, "wifi_config DNS", 384, NULL, 2, &context->dns_task_handle);
+}
+
+
+static void dns_stop() {
+    if (!context->dns_task_handle)
+        return;
+
+    xTaskNotify(context->dns_task_handle, 1, eSetValueWithOverwrite);
 }
 
 
@@ -475,10 +536,8 @@ static void wifi_config_context_free(wifi_config_context_t *context) {
     free(context);
 }
 
-static void wifi_config_softap_start(wifi_config_context_t *context) {
+static void wifi_config_softap_start() {
     INFO("Starting AP mode");
-
-    context->active = true;
 
     sdk_wifi_set_opmode(STATIONAP_MODE);
 
@@ -525,30 +584,31 @@ static void wifi_config_softap_start(wifi_config_context_t *context) {
     dhcpserver_set_router(&ap_ip.ip);
     dhcpserver_set_dns(&ap_ip.ip);
 
-    xTaskCreate(dns_task, "wifi_config DNS", 384, context, 2, NULL);
-    xTaskCreate(http_task, "wifi_config HTTP", 512, context, 2, NULL);
+    dns_start();
+    http_start();
 }
 
 
-static void wifi_config_softap_stop(wifi_config_context_t *context) {
-    context->active = false;
+static void wifi_config_softap_stop() {
     dhcpserver_stop();
+    dns_stop();
+    http_stop();
     sdk_wifi_set_opmode(STATION_MODE);
 }
 
 
 static void wifi_config_sta_connect_timeout_callback(void *arg) {
-    wifi_config_context_t *context = arg;
 
     if (sdk_wifi_station_get_connect_status() == STATION_GOT_IP) {
         // Connected to station, all is dandy
         DEBUG("Successfully connected");
         sdk_os_timer_disarm(&context->sta_connect_timeout);
 
-        wifi_config_softap_stop(context);
+        wifi_config_softap_stop();
         if (context->on_wifi_ready)
             context->on_wifi_ready();
         wifi_config_context_free(context);
+        context = NULL;
         return;
     }
 
@@ -560,11 +620,11 @@ static void wifi_config_sta_connect_timeout_callback(void *arg) {
     sdk_os_timer_disarm(&context->sta_connect_timeout);
     DEBUG("Timeout connecting to WiFi network, starting config AP");
     // Not connected to station, launch configuration AP
-    wifi_config_softap_start(context);
+    wifi_config_softap_start();
 }
 
 
-static int wifi_config_station_connect(wifi_config_context_t *context) {
+static int wifi_config_station_connect() {
     char *wifi_ssid = NULL;
     char *wifi_password = NULL;
     sysparam_get_string("wifi_ssid", &wifi_ssid);
@@ -604,12 +664,13 @@ static int wifi_config_station_connect(wifi_config_context_t *context) {
 
 
 void wifi_config_init(const char *ssid_prefix, const char *password, void (*on_wifi_ready)()) {
+    INFO("Initializing WiFi config");
     if (password && strlen(password) < 8) {
         ERROR("Password should be at least 8 characters");
         return;
     }
 
-    wifi_config_context_t *context = malloc(sizeof(wifi_config_context_t));
+    context = malloc(sizeof(wifi_config_context_t));
     memset(context, 0, sizeof(*context));
 
     context->ssid_prefix = strndup(ssid_prefix, 33-7);
@@ -618,8 +679,8 @@ void wifi_config_init(const char *ssid_prefix, const char *password, void (*on_w
 
     context->on_wifi_ready = on_wifi_ready;
 
-    if (wifi_config_station_connect(context)) {
-        wifi_config_softap_start(context);
+    if (wifi_config_station_connect()) {
+        wifi_config_softap_start();
     }
 }
 
