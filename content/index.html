@@ -112,7 +112,7 @@ for (i=0; i<nets.length; i++) {
     nets[i].onclick = function(event) {
         event.preventDefault();
         selectNetwork(this);
-        ssid_field.value = this.innerHTML;
+        ssid_field.value = this.innerText;
         hide(password_block);
         disable(password_field);
         password_field.value = '';
@@ -125,7 +125,7 @@ for (i=0; i<nets.length; i++) {
     nets[i].onclick = function(event) {
         event.preventDefault();
         selectNetwork(this);
-        ssid_field.value = this.innerHTML;
+        ssid_field.value = this.innerText;
         enable(password_field);
         show(password_block);
         disable(join_button);
