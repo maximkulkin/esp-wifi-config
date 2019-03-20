@@ -235,7 +235,7 @@ static void wifi_config_server_on_settings_update(client_t *client) {
 
     form_param_t *ssid_param = form_params_find(form, "ssid");
     form_param_t *password_param = form_params_find(form, "password");
-    if (!ssid_param || !password_param) {
+    if (!ssid_param) {
         form_params_free(form);
         client_send_redirect(client, 302, "/settings");
         return;
@@ -245,7 +245,11 @@ static void wifi_config_server_on_settings_update(client_t *client) {
     client_send(client, payload, sizeof(payload)-1);
 
     sysparam_set_string("wifi_ssid", ssid_param->value);
-    sysparam_set_string("wifi_password", password_param->value);
+    if (password_param) {
+        sysparam_set_string("wifi_password", password_param->value);
+    } else {
+        sysparam_set_string("wifi_password", "");
+    }
     form_params_free(form);
 
     vTaskDelay(500 / portTICK_PERIOD_MS);
