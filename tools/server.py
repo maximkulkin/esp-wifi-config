@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from collections import namedtuple
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 import os
 import os.path
 
@@ -45,7 +45,13 @@ def get_settings0():
 
 @app.route('/settings', methods=['POST'])
 def update_settings():
-    return 'Connecting to %s, password = %s' % (request.form['ssid'], request.form['password'])
+    if request.form.get('password'):
+        return 'Connecting to "%s", password = "%s"' % (
+            request.form['ssid'],
+            request.form['password']
+        )
+
+    return 'Connecting to "%s", no password' % request.form['ssid']
 
 
 app.run(host='0.0.0.0', debug=True)
