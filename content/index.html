@@ -40,7 +40,8 @@ input[type=submit][disabled] {
 .networks li.secure::before {content: "🔒"; position: absolute; left: 0;}
 .networks li.selected {font-weight: bold; background-color: #ddd}
 .networks li:hover {background-color: #eee;}
-.nonetworks {text-align: center; margin-bottom: 1em;}
+.networks li.other {border-top: 2px solid #aaa; text-align: center;}
+.nonetworks {text-align: center; margin: 1em 0;}
 .field {margin-bottom: 0.5em;}
 .field.required label::before {content: "*"; color: red;}
 </style>
@@ -52,17 +53,18 @@ input[type=submit][disabled] {
             <input type="submit" id="refresh" value="⟲ Refresh" />
         </form>
         <form action="/settings" method="post">
-            <ul class="networks">
+            <div class="nonetworks" style="display: none;">
+                No networks found
+            </div>
+
+            <ul id="networks" class="networks">
                 <!-- part HTML_NETWORK_ITEM -->
                 {% for network in networks %}
                 <li class="{{ network.secure | ternary('secure', 'unsecure') }}">{{ network.ssid }}</li>
                 {% endfor %}
                 <!-- part HTML_SETTINGS_FOOTER -->
+                <li class="other">Other</li>
             </ul>
-
-            <div class="nonetworks" style="display: none;">
-                No networks found
-            </div>
 
             <div class="field required ssid" style="display: none;">
                 <label for="ssid">SSID:</label>
@@ -80,18 +82,12 @@ input[type=submit][disabled] {
     <script>
 var ssid_field, password_block, password_field, join_button;
 
+networks_block = document.getElementById('networks');
 ssid_block = document.querySelector('.field.ssid');
 ssid_field = document.getElementById('ssid');
 password_block = document.querySelector('.field.password');
 password_field = document.getElementById('password');
 join_button = document.getElementById('join');
-
-if (document.querySelectorAll('ul.networks li').length == 0) {
-    show(document.querySelector('.nonetworks'));
-    show(ssid_block);
-    show(password_block);
-    password_block.classList.remove('required');
-}
 
 function enable(e) { e.disabled = ''; }
 function disable(e) { e.disabled = 'disabled'; }
@@ -113,6 +109,7 @@ for (i=0; i<nets.length; i++) {
         event.preventDefault();
         selectNetwork(this);
         ssid_field.value = this.innerText;
+        hide(ssid_block);
         hide(password_block);
         disable(password_field);
         password_field.value = '';
@@ -126,10 +123,38 @@ for (i=0; i<nets.length; i++) {
         event.preventDefault();
         selectNetwork(this);
         ssid_field.value = this.innerText;
+        hide(ssid_block);
         enable(password_field);
         show(password_block);
         disable(join_button);
+        password_block.classList.add('required');
     }
+}
+
+nets = document.querySelectorAll('ul.networks li.other');
+for (i=0; i<nets.length; i++) {
+    nets[i].onclick = function(event) {
+        event.preventDefault();
+        if (this.classList.contains('selected'))
+            return;
+
+        selectNetwork(this);
+        ssid_field.value = "";
+        show(ssid_block);
+        show(password_block);
+        enable(ssid_field);
+        enable(password_field);
+        disable(join_button);
+        password_block.classList.remove('required');
+    }
+}
+
+if (document.querySelectorAll('ul.networks li').length == 1) {
+    show(document.querySelector('.nonetworks'));
+    hide(networks_block);
+    show(ssid_block);
+    show(password_block);
+    password_block.classList.remove('required');
 }
 
 let s = ssid_field;
