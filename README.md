@@ -1,4 +1,7 @@
 # esp-wifi-config
+
+forked from maximkulkin/esp-wifi-config
+
 Library for esp-open-rtos to bootstrap WiFi-enabled accessories WiFi config
 
 Library uses sysparams to store configuration. When you initialize it
