@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Welcome</title>
+<title>WiFi Configuration</title>
 <style type="text/css">
 html, input {font-size: 40px;}
 h1 { font-size: 150%; text-align: center; }
@@ -40,31 +40,29 @@ input[type=submit][disabled] {
 .networks li.secure::before {content: "🔒"; position: absolute; left: 0;}
 .networks li.selected {font-weight: bold; background-color: #ddd}
 .networks li:hover {background-color: #eee;}
-.networks li.other {border-top: 2px solid #aaa; text-align: center;}
-.nonetworks {text-align: center; margin: 1em 0;}
+.nonetworks {text-align: center; margin-bottom: 1em;}
 .field {margin-bottom: 0.5em;}
 .field.required label::before {content: "*"; color: red;}
 </style>
 </head>
 <body>
     <div class="container">
-        <h1>Join WiFi network</h1>
+        <h1>test</h1>
         <form action="/settings" method="get">
             <input type="submit" id="refresh" value="⟲ Refresh" />
         </form>
         <form action="/settings" method="post">
-            <div class="nonetworks" style="display: none;">
-                No networks found
-            </div>
-
-            <ul id="networks" class="networks">
+            <ul class="networks">
                 <!-- part HTML_NETWORK_ITEM -->
                 {% for network in networks %}
                 <li class="{{ network.secure | ternary('secure', 'unsecure') }}">{{ network.ssid }}</li>
                 {% endfor %}
-                <!-- part HTML_SETTINGS_FOOTER -->
-                <li class="other">Other</li>
+                <!-- part HTML_SETTINGS_MIDDLE -->
             </ul>
+
+            <div class="nonetworks" style="display: none;">
+                No networks found
+            </div>
 
             <div class="field required ssid" style="display: none;">
                 <label for="ssid">SSID:</label>
@@ -77,17 +75,41 @@ input[type=submit][disabled] {
             </div>
 
             <input type="submit" id="join" value="Join" disabled />
+
+                <!-- part HTML_SETTINGS_OTAPARAMETERS -->
+            <div class="field otarepo" style="display: block;">
+                <label for="otarepo">OTA repository:</label>
+                <input type="text" id="otarepo" name="otarepo" value="HomeACcessoryKid/ota-demo" />
+            </div>
+            <div class="field otafile" style="display: block;">
+                <label for="otafile">OTA binary file:</label>
+                <input type="text" id="otafile" name="otafile" value="main.bin" />
+            </div>
+            <div class="form-checkbox unchecked">
+                <label>
+                <input name="otabeta" type="hidden" value="0" />
+                <input type="checkbox" value="1" name="otabeta" id="otabeta" />
+                Use (maybe broken) pre-releases?
+                </label>
+            </div>
+                <!-- part HTML_SETTINGS_FOOTER -->
         </form>
     </div>
     <script>
 var ssid_field, password_block, password_field, join_button;
 
-networks_block = document.getElementById('networks');
 ssid_block = document.querySelector('.field.ssid');
 ssid_field = document.getElementById('ssid');
 password_block = document.querySelector('.field.password');
 password_field = document.getElementById('password');
 join_button = document.getElementById('join');
+
+if (document.querySelectorAll('ul.networks li').length == 0) {
+    show(document.querySelector('.nonetworks'));
+    show(ssid_block);
+    show(password_block);
+    password_block.classList.remove('required');
+}
 
 function enable(e) { e.disabled = ''; }
 function disable(e) { e.disabled = 'disabled'; }
@@ -108,8 +130,7 @@ for (i=0; i<nets.length; i++) {
     nets[i].onclick = function(event) {
         event.preventDefault();
         selectNetwork(this);
-        ssid_field.value = this.innerText;
-        hide(ssid_block);
+        ssid_field.value = this.innerHTML;
         hide(password_block);
         disable(password_field);
         password_field.value = '';
@@ -122,39 +143,11 @@ for (i=0; i<nets.length; i++) {
     nets[i].onclick = function(event) {
         event.preventDefault();
         selectNetwork(this);
-        ssid_field.value = this.innerText;
-        hide(ssid_block);
+        ssid_field.value = this.innerHTML;
         enable(password_field);
         show(password_block);
         disable(join_button);
-        password_block.classList.add('required');
     }
-}
-
-nets = document.querySelectorAll('ul.networks li.other');
-for (i=0; i<nets.length; i++) {
-    nets[i].onclick = function(event) {
-        event.preventDefault();
-        if (this.classList.contains('selected'))
-            return;
-
-        selectNetwork(this);
-        ssid_field.value = "";
-        show(ssid_block);
-        show(password_block);
-        enable(ssid_field);
-        enable(password_field);
-        disable(join_button);
-        password_block.classList.remove('required');
-    }
-}
-
-if (document.querySelectorAll('ul.networks li').length == 1) {
-    show(document.querySelector('.nonetworks'));
-    hide(networks_block);
-    show(ssid_block);
-    show(password_block);
-    password_block.classList.remove('required');
 }
 
 let s = ssid_field;
