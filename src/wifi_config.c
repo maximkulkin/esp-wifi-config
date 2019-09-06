@@ -60,7 +60,6 @@ typedef struct {
 
 static wifi_config_context_t *context = NULL;
 
-
 typedef struct _client {
     int fd;
 
@@ -217,6 +216,18 @@ static void wifi_config_server_on_settings(client_t *client) {
     client_send_chunk(client, html_settings_header);
 
     char buffer[64];
+    char *accessory_id = "111-22-333";
+    accessory_id_get(&accessory_id);
+
+    snprintf(
+	buffer, sizeof(buffer),
+        html_settings_header_accessoryid,	
+	accessory_id
+    );
+
+    client_send_chunk(client, buffer); /*send accessory ID*/
+    client_send_chunk(client, html_settings_header_settings);
+
     if (xSemaphoreTake(wifi_networks_mutex, 5000 / portTICK_PERIOD_MS)) {
         wifi_network_info_t *net = wifi_networks;
         while (net) {
@@ -793,3 +804,13 @@ void wifi_config_set(const char *ssid, const char *password) {
     sysparam_set_string("wifi_ssid", ssid);
     sysparam_set_string("wifi_password", password);
 }
+
+void accessory_id_set(const char *accessory_id) {
+    sysparam_set_string("accessory_id", accessory_id);
+}
+
+void accessory_id_get(char **accessory_id) {
+    sysparam_get_string("accessory_id", accessory_id);
+}
+
+
