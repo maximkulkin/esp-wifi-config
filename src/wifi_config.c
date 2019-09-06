@@ -216,7 +216,7 @@ static void wifi_config_server_on_settings(client_t *client) {
     client_send_chunk(client, html_settings_header);
 
     char buffer[64];
-    char *accessory_id = "111-22-333";
+    char accessory_id[12];
     accessory_id_get(&accessory_id);
 
     snprintf(
