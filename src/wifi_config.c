@@ -59,6 +59,7 @@ typedef struct {
 
 
 static wifi_config_context_t *context = NULL;
+static char* custom_section = NULL;
 
 typedef struct _client {
     int fd;
@@ -215,20 +216,24 @@ static void wifi_config_server_on_settings(client_t *client) {
     client_send(client, http_prologue, sizeof(http_prologue)-1);
     client_send_chunk(client, html_settings_header);
 
-    char buffer[64];
-    char accessory_id[12];
-    accessory_id_get(&accessory_id);
 
-    snprintf(
-	buffer, sizeof(buffer),
-        html_settings_header_accessoryid,	
-	accessory_id
-    );
+    //only send custom section if initialised
+    if( custom_section != NULL ) {
+	char* buffer = (char*) malloc( sizeof(custom_section) );
+	snprintf(
+	    buffer, sizeof(buffer) + sizeof(custom_section),
+            html_settings_header_custom_section,
+	    custom_section
+	);
 
-    client_send_chunk(client, buffer); /*send accessory ID*/
+	client_send_chunk(client, buffer); //send custom section
+	free(buffer);
+    }
+
     client_send_chunk(client, html_settings_header_settings);
 
     if (xSemaphoreTake(wifi_networks_mutex, 5000 / portTICK_PERIOD_MS)) {
+	char buffer[64];
         wifi_network_info_t *net = wifi_networks;
         while (net) {
             snprintf(
@@ -805,12 +810,12 @@ void wifi_config_set(const char *ssid, const char *password) {
     sysparam_set_string("wifi_password", password);
 }
 
-void accessory_id_set(const char *accessory_id) {
-    sysparam_set_string("accessory_id", accessory_id);
+/**
+ * sets the custom section to use with the AP homepage
+ * */
+void custom_section_set(char *param_custom_section) {
+    custom_section = param_custom_section;
 }
 
-void accessory_id_get(char **accessory_id) {
-    sysparam_get_string("accessory_id", accessory_id);
-}
 
 
