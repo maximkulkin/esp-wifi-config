@@ -11,6 +11,5 @@ void wifi_config_init2(const char *ssid_prefix, const char *password, void (*on_
 void wifi_config_reset();
 void wifi_config_get(char **ssid, char **password);
 void wifi_config_set(const char *ssid, const char *password);
-void accessory_id_set(const char *accessory_id);
-void accessory_id_get(char **accessory_id);
 
+void custom_section_set(char *param_custom_section); 
