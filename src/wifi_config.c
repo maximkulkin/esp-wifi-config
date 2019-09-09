@@ -218,13 +218,10 @@ static void wifi_config_server_on_settings(client_t *client) {
 
 
     //only send custom section if initialised
-    if( custom_section != NULL ) {
-	char* buffer = (char*) malloc( sizeof(custom_section) );
-	snprintf(
-	    buffer, sizeof(buffer) + sizeof(custom_section),
-            html_settings_header_custom_section,
-	    custom_section
-	);
+    if( custom_section != NULL && strlen(custom_section) > 0 ) {
+	uint8_t buffer_size = strlen(html_settings_header_custom_section) + strlen(custom_section);
+	char* buffer = (char*) calloc( buffer_size, 0 );
+	snprintf( buffer, buffer_size, html_settings_header_custom_section, custom_section);
 
 	client_send_chunk(client, buffer); //send custom section
 	free(buffer);
