@@ -455,7 +455,7 @@ static void http_task(void *arg) {
 
 
 static void http_start() {
-    xTaskCreate(http_task, "wifi_config HTTP", 768, NULL, 2, &context->http_task_handle);
+    xTaskCreate(http_task, "wifi_config HTTP", 512, NULL, 2, &context->http_task_handle);
 }
 
 
