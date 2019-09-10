@@ -60,7 +60,6 @@ typedef struct {
 
 
 static wifi_config_context_t *context = NULL;
-static char* custom_section = NULL;
 
 typedef struct _client {
     int fd;
@@ -219,10 +218,10 @@ static void wifi_config_server_on_settings(client_t *client) {
 
 
     //only send custom section if initialised
-    if( custom_section != NULL && strlen(custom_section) > 0 ) {
-	uint8_t buffer_size = strlen(html_settings_header_custom_section) + strlen(custom_section); //buffer size is the template size + custom section size
+    if( context->custom_section != NULL && strlen(context->custom_section) > 0 ) {
+	uint8_t buffer_size = strlen(html_settings_header_custom_section) + strlen(context->custom_section); //buffer size is the template size + custom section size
 	char* buffer = (char*) calloc( buffer_size, sizeof(char) ); //fill up the buffer with zeros
-	snprintf( buffer, buffer_size, html_settings_header_custom_section, custom_section); //fill in template with the custom_section content
+	snprintf( buffer, buffer_size, html_settings_header_custom_section, context->custom_section); //fill in template with the custom_section content
 	client_send_chunk(client, buffer); //send custom section
 	free(buffer);
     }
@@ -754,8 +753,10 @@ void wifi_config_init(const char *ssid_prefix, const char *password, void (*on_w
         return;
     }
 
-    context = malloc(sizeof(wifi_config_context_t));
-    memset(context, 0, sizeof(*context));
+    if( context == NULL ) {
+	context = malloc(sizeof(wifi_config_context_t));
+	memset(context, 0, sizeof(*context));
+    }
 
     context->ssid_prefix = strndup(ssid_prefix, 33-7);
     if (password)
@@ -809,9 +810,16 @@ void wifi_config_set(const char *ssid, const char *password) {
 
 /**
  * sets the custom section to use with the AP homepage
+ * at this point context may not be initialised yet, 
+ * so initialise if doesn't exist
  * */
-void custom_section_set(char *param_custom_section) {
-    custom_section = param_custom_section;
+void custom_section_set(char *custom_section) {
+    if( context == NULL ) {
+	context = malloc(sizeof(wifi_config_context_t));
+	memset(context, 0, sizeof(*context));
+    }
+
+    context->custom_section = custom_section;
 }
 
 
