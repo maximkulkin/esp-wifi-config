@@ -811,7 +811,7 @@ void wifi_config_set(const char *ssid, const char *password) {
  * at this point context may not be initialised yet, 
  * so initialise if doesn't exist
  * */
-void custom_section_set(char *custom_section) {
+void wifi_config_custom_section_set(char *custom_section) {
     if(context == NULL) { 
 	ERROR("cannot set custom html content, wifi configuration not initialised yet"); 
     } else context->custom_section = custom_section;
