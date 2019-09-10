@@ -218,7 +218,7 @@ static void wifi_config_server_on_settings(client_t *client) {
 
 
     //only send custom section if initialised
-    if( context->custom_section != NULL && strlen(context->custom_section) > 0 ) {
+    if(context->custom_section != NULL && strlen(context->custom_section) > 0) {
 	uint8_t buffer_size = strlen(html_settings_header_custom_section) + strlen(context->custom_section); //buffer size is the template size + custom section size
 	char* buffer = (char*) calloc( buffer_size, sizeof(char) ); //fill up the buffer with zeros
 	snprintf( buffer, buffer_size, html_settings_header_custom_section, context->custom_section); //fill in template with the custom_section content
@@ -753,10 +753,8 @@ void wifi_config_init(const char *ssid_prefix, const char *password, void (*on_w
         return;
     }
 
-    if( context == NULL ) {
-	context = malloc(sizeof(wifi_config_context_t));
-	memset(context, 0, sizeof(*context));
-    }
+    context = malloc(sizeof(wifi_config_context_t));
+    memset(context, 0, sizeof(*context));
 
     context->ssid_prefix = strndup(ssid_prefix, 33-7);
     if (password)
@@ -814,12 +812,8 @@ void wifi_config_set(const char *ssid, const char *password) {
  * so initialise if doesn't exist
  * */
 void custom_section_set(char *custom_section) {
-    if( context == NULL ) {
-	context = malloc(sizeof(wifi_config_context_t));
-	memset(context, 0, sizeof(*context));
-    }
-
-    context->custom_section = custom_section;
+    if(context == NULL) ERROR("cannot set custom html content, wifi configuration not initialised yet");
+    else context->custom_section = custom_section;
 }
 
 
