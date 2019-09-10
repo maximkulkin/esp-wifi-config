@@ -48,6 +48,7 @@ typedef enum {
 typedef struct {
     char *ssid_prefix;
     char *password;
+    char *custom_section;
     void (*on_wifi_ready)();  // deprecated
     void (*on_event)(wifi_config_event_t);
 
@@ -59,7 +60,7 @@ typedef struct {
 
 
 static wifi_config_context_t *context = NULL;
-static char* custom_html_section = NULL;
+static char* custom_section = NULL;
 
 typedef struct _client {
     int fd;
@@ -218,11 +219,10 @@ static void wifi_config_server_on_settings(client_t *client) {
 
 
     //only send custom section if initialised
-    if( custom_html_section != NULL && strlen(custom_html_section) > 0 ) {
-	uint8_t buffer_size = strlen(html_settings_header_custom_html_section) + strlen(custom_html_section);
-	char* buffer = (char*) calloc( buffer_size, 0 );
-	snprintf( buffer, buffer_size, html_settings_header_custom_html_section, custom_html_section);
-
+    if( custom_section != NULL && strlen(custom_section) > 0 ) {
+	uint8_t buffer_size = strlen(html_settings_header_custom_section) + strlen(custom_section); //buffer size is the template size + custom section size
+	char* buffer = (char*) calloc( buffer_size, sizeof(char) ); //fill up the buffer with zeros
+	snprintf( buffer, buffer_size, html_settings_header_custom_section, custom_section); //fill in template with the custom_section content
 	client_send_chunk(client, buffer); //send custom section
 	free(buffer);
     }
@@ -810,8 +810,8 @@ void wifi_config_set(const char *ssid, const char *password) {
 /**
  * sets the custom section to use with the AP homepage
  * */
-void custom_html_section_set(char *param_custom_html_section) {
-    custom_html_section = param_custom_html_section;
+void custom_section_set(char *param_custom_section) {
+    custom_section = param_custom_section;
 }
 
 
