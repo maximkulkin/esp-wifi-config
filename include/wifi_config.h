@@ -12,4 +12,4 @@ void wifi_config_reset();
 void wifi_config_get(char **ssid, char **password);
 void wifi_config_set(const char *ssid, const char *password);
 
-void custom_section_set(char *param_custom_section); 
+void custom_html_section_set(char *param_custom_html_section); 
