@@ -48,7 +48,7 @@ typedef enum {
 typedef struct {
     char *ssid_prefix;
     char *password;
-    char *custom_section;
+    char *custom_html;
     void (*on_wifi_ready)();  // deprecated
     void (*on_event)(wifi_config_event_t);
 
@@ -216,13 +216,11 @@ static void wifi_config_server_on_settings(client_t *client) {
     client_send(client, http_prologue, sizeof(http_prologue)-1);
     client_send_chunk(client, html_settings_header);
 
-
-    //only send custom section if initialised
-    if(context->custom_section != NULL && strlen(context->custom_section) > 0) {
-	uint8_t buffer_size = strlen(html_settings_custom_section) + strlen(context->custom_section); //buffer size is the template size + custom section size
-	char* buffer = (char*) calloc( buffer_size, sizeof(char) ); //fill up the buffer with zeros
-	snprintf( buffer, buffer_size, html_settings_custom_section, context->custom_section); //fill in template with the custom_section content
-	client_send_chunk(client, buffer); //send custom section
+    if (context->custom_html != NULL && context->custom_html[0] > 0) {
+	uint8_t buffer_size = strlen(html_settings_custom_html) + strlen(context->custom_html); 
+	char* buffer = (char*) calloc(buffer_size, sizeof(char)); //fill up the buffer with zeros
+	snprintf(buffer, buffer_size, html_settings_custom_html, context->custom_html); //fill in template with the custom_html content
+	client_send_chunk(client, buffer); 
 	free(buffer);
     }
 
@@ -806,15 +804,13 @@ void wifi_config_set(const char *ssid, const char *password) {
     sysparam_set_string("wifi_password", password);
 }
 
-/**
- * sets the custom section to use with the AP homepage
- * at this point context may not be initialised yet, 
- * so initialise if doesn't exist
- * */
-void wifi_config_custom_section_set(char *custom_section) {
-    if(context == NULL) { 
+void wifi_config_set_custom_html(char *html) {
+    if (context == NULL) { 
 	ERROR("cannot set custom html content, wifi configuration not initialised yet"); 
-    } else context->custom_section = custom_section;
+	return;
+    } 
+
+    context->custom_html = html;
 }
 
 
