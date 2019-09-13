@@ -28,6 +28,13 @@ app = Flask(
 )
 
 
+def get_custom_html():
+    if 'WIFI_CONFIG_CUSTOM_HTML' not in os.environ:
+        return ''
+    with open(os.environ['WIFI_CONFIG_CUSTOM_HTML']) as f:
+        return f.read()
+
+
 @app.template_filter('ternary')
 def ternary(x, true, false):
     return true if x else false
@@ -35,12 +42,20 @@ def ternary(x, true, false):
 
 @app.route('/settings', methods=['GET'])
 def get_settings():
-    return render_template('index.html', networks=WIFI_NETWORKS)
+    return render_template(
+        'index.html',
+        networks=WIFI_NETWORKS,
+        custom_html=get_custom_html(),
+    )
 
 
 @app.route('/settings0', methods=['GET'])
 def get_settings0():
-    return render_template('index.html', networks=[])
+    return render_template(
+        'index.html',
+        networks=[],
+        custom_html=get_custom_html(),
+    )
 
 
 @app.route('/settings', methods=['POST'])
