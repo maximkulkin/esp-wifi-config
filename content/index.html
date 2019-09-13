@@ -48,11 +48,11 @@ input[type=submit][disabled] {
 </head>
 <body>
     <div class="container">
-       	 <!-- part HTML_SETTINGS_CUSTOM_HTML -->
-	 {{custom_html}}
-	 <!-- part HTML_SETTINGS_BODY -->
-         <h1>Join WiFi network</h1>
-	 <form action="/settings" method="get">
+        <!-- part HTML_SETTINGS_CUSTOM_HTML -->
+        {{ custom_html|safe }}
+        <!-- part HTML_SETTINGS_BODY -->
+        <h1>Join WiFi network</h1>
+        <form action="/settings" method="get">
             <input type="submit" id="refresh" value="⟲ Refresh" />
         </form>
         <form action="/settings" method="post">
