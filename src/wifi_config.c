@@ -794,8 +794,11 @@ void wifi_config_reset() {
 
 
 void wifi_config_get(char **ssid, char **password) {
-    sysparam_get_string("wifi_ssid", ssid);
-    sysparam_get_string("wifi_password", password);
+    if (ssid)
+        sysparam_get_string("wifi_ssid", ssid);
+
+    if (password)
+        sysparam_get_string("wifi_password", password);
 }
 
 
