@@ -806,12 +806,9 @@ void wifi_config_set(const char *ssid, const char *password) {
 
 void wifi_config_set_custom_html(char *html) {
     if (context == NULL) { 
-	ERROR("cannot set custom html content, wifi configuration not initialised yet"); 
-	return;
-    } 
+        ERROR("Cannot set custom html content, WiFi configuration not initialised yet");
+        return;
+    }
 
     context->custom_html = html;
 }
-
-
-
