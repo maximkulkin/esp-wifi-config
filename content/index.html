@@ -6,210 +6,187 @@
     <title>WiFi Configration</title>
 
     <style type="text/css">
-      html,
-      input {
-        font-family: "Roboto", sans-serif;
-      }
-      h1 {
-        margin-bottom: 0;
-        font-size: 40px;
-        line-height: 1.05;
-        font-weight: 500;
-        letter-spacing: 0.008em;
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-        word-wrap: break-word;
-        text-align: center;
-        font-synthesis: none;
-        -moz-font-feature-settings: 'kern';
-        direction: ltr;
-        color: #333;
-        font-style: normal;
-      }
-      p {
-        text-align: justify;
-        font-size: 17px;
-        line-height: 1.47059;
-        font-weight: 400;
-        letter-spacing: -.022em;
-        color: #333;
-        font-style: normal;
-      }
-      body .container {
-        width: 70%;
-        margin: 0 auto;
-        padding: 1em;
-      }
-      label {
-        display: block;
-      }
-      input[type=password],
-      input[type=text] {
-        border-radius: 7px;
-        height: 3.25rem;
-        font-family: inherit;
-        font-weight: 300;
-        border-radius: 3px;
-        letter-spacing: 0.008em;
-        color: #333;
-        border: 1px solid #bbb;
-        -webkit-appearance: none;
-        font-size: 1.375rem;
-        padding-left: 10px;
-        line-height: 1.5294717647;
-        text-align: left;
-        margin: 0;
-        font-synthesis: none;
-        -moz-font-feature-settings: 'kern';
-        box-sizing: border-box;
-        width: 100%;
-      }
-      input[type=submit] {
-        width: 100%;
-        border: 1px solid black;
-        text-decoration: none;
-        padding: 0.25em 5em;
-        color: white;
-        background-color: #4caf50;
-        cursor: pointer;
-        -webkit-appearance: none;
-        -webkit-border-radius: 0;
-      }
-      input[type=submit]#refresh {
-        border-radius: 7px;
-        height: 3.25rem;
-        font-family: inherit;
-        font-weight: 300;
-        border-radius: 3px;
-        letter-spacing: 0.008em;
-        color: #333;
-        border: 1px solid #0070c9;
-        -webkit-appearance: none;
-        font-size: 1.375rem;
-        background-color: #fff;
-        line-height: 1.5294717647;
-        margin: 0;
-        font-synthesis: none;
-        -moz-font-feature-settings: 'kern';
-        box-sizing: border-box;
-        width: 100%;
-      }
-      input[type=submit]#join {
-        border-radius: 7px;
-        height: 3.25rem;
-        font-family: inherit;
-        font-weight: 300;
-        border-radius: 3px;
-        letter-spacing: 0.008em;
-        color: #333;
-        border: 1px solid #71D342;
-        -webkit-appearance: none;
-        font-size: 1.375rem;
-        background-color: #71D342;
-        line-height: 1.5294717647;
-        margin: 0;
-        font-synthesis: none;
-        -moz-font-feature-settings: 'kern';
-        box-sizing: border-box;
-        width: 100%;
-      }
-      input[type=submit][disabled] {
-        color: #aaaaaa;
-        border: 1px solid #eeeeee !important;
-        background-color: #eeeeee !important;
-      }
-      .networks {
-        list-style: none;
-        margin: 1em 0;
-        padding: 0;
-        font-size: 1.375rem;
-        line-height: 1.47059;
-        font-weight: 100;
-      }
-      .networks li {
-        cursor: pointer;
-        padding: 0.25em;
-        margin-bottom: 0.25em;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        position: relative;
-        padding-left: 1.1em;
-        font-size: 1.375rem;
-        line-height: 1.47059;
-        font-weight: 100;
-      }
-      .networks li.secure::before {
-        content: "🔒";
-        position: absolute;
-        left: 0;
-        font-size: 1.375rem;
-        line-height: 1.47059;
-        font-weight: 100;
-      }
-      .networks li.selected {
-        font-weight: bold;
-        background-color: #ddd;
-        border-radius: 3px;
-        font-size: 1.375rem;
-        line-height: 1.47059;
-        font-weight: 100;
-      }
-      .networks li:hover {
-        background-color: #eee;
-        border-radius: 3px;
-        font-size: 1.375rem;
-        line-height: 1.47059;
-        font-weight: 100;
-      }
-      .networks li.other {
-        border-radius: 7px;
-        height: 3.25rem;
-        font-family: inherit;
-        font-weight: 300;
-        padding: 8px;
-        border-radius: 3px;
-        letter-spacing: 0.008em;
-        color: #333;
-        border: 1px solid #0070c9;
-        -webkit-appearance: none;
-        font-size: 1.375rem;
-        background-color: #fff;
-        line-height: 1.5294717647;
-        margin: 0;
-        font-synthesis: none;
-        -moz-font-feature-settings: 'kern';
-        box-sizing: border-box;
-        width: 100%;
-        text-align: center;
-      }
-      .nonetworks {
-        text-align: center;
-        margin: 1em 0;
-      }
-      .field {
-        margin-bottom: 0.5em;
-      }
-      .field.required label::before {
-        content: "✱";
-        color: red;
-      }
-      .logo {
-        margin: auto;
-        border-radius: 10px;
-        border: 2px solid #777777;
-        width: 70px;
-        height: 70px;
-        margin-top: 70px;
-        margin-bottom: 70px;
-      }
-      .special {
-        font-size: 120px;
-        color: #ff9d0a;
-        margin-top: -22px;
-        margin-left: -15px;
-      }
+    html,input {
+  font-family: "Roboto",sans-serif
+}
+
+h1,input[type=password],input[type=submit]#join,input[type=submit]#refresh,input[type=text] {
+  letter-spacing: .008em;
+  color: #333;
+  margin: 0;
+  font-synthesis: none;
+  -moz-font-feature-settings: 'kern';
+  box-sizing: border-box
+}
+
+h1,p {
+  font-style: normal
+}
+
+h1 {
+  padding: 0;
+  font-size: 40px;
+  text-align: center;
+  line-height: 1.05;
+  font-weight: 500
+}
+
+p {
+  text-align: justify;
+  font-size: 17px;
+  line-height: 1.47059;
+  font-weight: 400;
+  letter-spacing: -.022em;
+  color: #333
+}
+
+body .container {
+  width: 70%;
+  margin: 0 auto;
+  padding: 1em
+}
+
+label {
+  display: block
+}
+
+input[type=password],input[type=text] {
+  height: 3.25rem;
+  font-family: inherit;
+  font-weight: 300;
+  border-radius: 3px;
+  border: 1px solid #bbb;
+  -webkit-appearance: none;
+  font-size: 1.375rem;
+  padding-left: 10px;
+  line-height: 1.5294717647;
+  text-align: left;
+  width: 100%
+}
+
+input[type=submit] {
+  width: 100%;
+  border: 1px solid #000;
+  text-decoration: none;
+  padding: .25em 5em;
+  color: #fff;
+  background-color: #4caf50;
+  cursor: pointer;
+  -webkit-appearance: none;
+  -webkit-border-radius: 0
+}
+
+input[type=submit]#join,input[type=submit]#refresh {
+  height: 3.25rem;
+  font-family: inherit;
+  font-weight: 300;
+  border-radius: 3px;
+  border: 1px solid #0070c9;
+  -webkit-appearance: none;
+  font-size: 1.375rem;
+  background-color: #fff;
+  line-height: 1.5294717647;
+  width: 100%
+}
+
+input[type=submit]#join {
+  border: 1px solid #71d342;
+  background-color: #71d342
+}
+
+input[type=submit][disabled] {
+  color: #aaa;
+  border: 1px solid #eee!important;
+  background-color: #eee!important
+}
+
+.networks {
+  list-style: none;
+  margin: 1em 0;
+  padding: 0
+}
+
+.networks,.networks li,.networks li.secure::before {
+  font-size: 1.375rem;
+  line-height: 1.47059;
+  font-weight: 100
+}
+
+.networks li {
+  cursor: pointer;
+  margin-bottom: .25em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: .25em .25em .25em 1.1em;
+  position: relative
+}
+
+.networks li.secure::before {
+  content: "🔒";
+  position: absolute;
+  left: 0
+}
+
+.networks li.other,.networks li.selected,.networks li:hover {
+  background-color: #ddd;
+  border-radius: 3px;
+  font-size: 1.375rem;
+  line-height: 1.47059;
+  font-weight: 100
+}
+
+.networks li.other,.networks li:hover {
+  background-color: #eee
+}
+
+.networks li.other {
+  height: 3.25rem;
+  font-family: inherit;
+  font-weight: 300;
+  padding: 8px;
+  letter-spacing: .008em;
+  color: #333;
+  border: 1px solid #0070c9;
+  -webkit-appearance: none;
+  background-color: #fff;
+  line-height: 1.5294717647;
+  margin: 0;
+  font-synthesis: none;
+  -moz-font-feature-settings: 'kern';
+  box-sizing: border-box;
+  width: 100%;
+  text-align: center
+}
+
+.nonetworks {
+  text-align: center;
+  margin: 1em 0
+}
+
+.field {
+  margin-bottom: .5em
+}
+
+.field.required label::before {
+  content: "*";
+  color: red
+}
+
+.logo {
+  border-radius: 10px;
+  border: 2px solid #777;
+  width: 70px;
+  height: 70px;
+  margin: 70px auto
+}
+
+.special {
+  font-size: 120px;
+  color: #ff9d0a;
+  margin-top: -22px;
+  margin-left: -15px
+}
     </style>
 
   </head>
@@ -221,8 +198,7 @@
       <!-- part HTML_SETTINGS_CUSTOM_HTML -->
       <!-- {{ custom_html|safe }} -->
       <!-- part HTML_SETTINGS_BODY -->
-      <h1>Network setup assistant
-      </h1>
+      <h1>Network setup assistant</h1>
       <p>You can use the network setup assistant utility to create a new wireless network connection for your ESP XXX Module. The network setup assistant guides you through the steps necessary to connect to your network. You can select a network SSID found
         by the network setup assistant or add a hidden SSID trough custom network settings. Then you only need to add corresponding password.</p>
       <form action="/settings" method="get">
