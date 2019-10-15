@@ -4,203 +4,189 @@
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WiFi Configration</title>
-
     <style type="text/css">
-    html,input {
-  font-family: "Roboto",sans-serif
-}
+    html,input {font-family:"Roboto",sans-serif}
 
 h1,input[type=password],input[type=submit]#join,input[type=submit]#refresh,input[type=text] {
-  letter-spacing: .008em;
-  color: #333;
-  margin: 0;
-  font-synthesis: none;
-  -moz-font-feature-settings: 'kern';
-  box-sizing: border-box
+letter-spacing:.008em;
+color:#333;
+margin:0;
+box-sizing:border-box
 }
 
 h1,p {
-  font-style: normal
+font-style:normal
 }
 
 h1 {
-  padding: 0;
-  font-size: 40px;
-  text-align: center;
-  line-height: 1.05;
-  font-weight: 500
+padding:0;
+font-size:40px;
+text-align:center;
+line-height:1.05;
+font-weight:500
 }
 
 p {
-  text-align: justify;
-  font-size: 17px;
-  line-height: 1.47059;
-  font-weight: 400;
-  letter-spacing: -.022em;
-  color: #333
+text-align:justify;
+font-size:17px;
+line-height:1.47059;
+font-weight:400;
+letter-spacing:-.022em;
+color:#333
 }
 
 body .container {
-  width: 70%;
-  margin: 0 auto;
-  padding: 1em
+width:70%;
+margin:0 auto;
+padding:1em
 }
 
 label {
-  display: block
+display:block
 }
 
 input[type=password],input[type=text] {
-  height: 3.25rem;
-  font-family: inherit;
-  font-weight: 300;
-  border-radius: 3px;
-  border: 1px solid #bbb;
-  -webkit-appearance: none;
-  font-size: 1.375rem;
-  padding-left: 10px;
-  line-height: 1.5294717647;
-  text-align: left;
-  width: 100%
+height:3.25rem;
+font-family:inherit;
+font-weight:300;
+border-radius:3px;
+border:1px solid #bbb;
+font-size:1.375rem;
+padding-left:10px;
+line-height:1.5294717647;
+text-align:left;
+width:100%
 }
 
 input[type=submit] {
-  width: 100%;
-  border: 1px solid #000;
-  text-decoration: none;
-  padding: .25em 5em;
-  color: #fff;
-  background-color: #4caf50;
-  cursor: pointer;
-  -webkit-appearance: none;
-  -webkit-border-radius: 0
+width:100%;
+border:1px solid #000;
+text-decoration:none;
+padding:.25em 5em;
+color:#fff;
+background-color:#4caf50;
+cursor:pointer
 }
 
 input[type=submit]#join,input[type=submit]#refresh {
-  height: 3.25rem;
-  font-family: inherit;
-  font-weight: 300;
-  border-radius: 3px;
-  border: 1px solid #0070c9;
-  -webkit-appearance: none;
-  font-size: 1.375rem;
-  background-color: #fff;
-  line-height: 1.5294717647;
-  width: 100%
+height:3.25rem;
+font-family:inherit;
+font-weight:300;
+border-radius:3px;
+border:1px solid #0070c9;
+font-size:1.375rem;
+background-color:#fff;
+line-height:1.5294717647;
+width:100%
 }
 
 input[type=submit]#join {
-  border: 1px solid #71d342;
-  background-color: #71d342
+border:1px solid #71d342;
+background-color:#71d342
 }
 
 input[type=submit][disabled] {
-  color: #aaa;
-  border: 1px solid #eee!important;
-  background-color: #eee!important
+color:#aaa;
+border:1px solid #eee!important;
+background-color:#eee!important
 }
 
 .networks {
-  list-style: none;
-  margin: 1em 0;
-  padding: 0
+list-style:none;
+margin:1em 0;
+padding:0
 }
 
 .networks,.networks li,.networks li.secure::before {
-  font-size: 1.375rem;
-  line-height: 1.47059;
-  font-weight: 100
+font-size:1.375rem;
+line-height:1.47059;
+font-weight:100
 }
 
 .networks li {
-  cursor: pointer;
-  margin-bottom: .25em;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  padding: .25em .25em .25em 1.1em;
-  position: relative
+cursor:pointer;
+margin-bottom:.25em;
+white-space:nowrap;
+overflow:hidden;
+padding:.25em .25em .25em 1.1em;
+position:relative
 }
 
 .networks li.secure::before {
-  content: "🔒";
-  position: absolute;
-  left: 0
+content:"🔒";
+position:absolute;
+left:0
 }
 
 .networks li.other,.networks li.selected,.networks li:hover {
-  background-color: #ddd;
-  border-radius: 3px;
-  font-size: 1.375rem;
-  line-height: 1.47059;
-  font-weight: 100
+background-color:#ddd;
+border-radius:3px;
+font-size:1.375rem;
+line-height:1.47059;
+font-weight:100
 }
 
 .networks li.other,.networks li:hover {
-  background-color: #eee
+background-color:#eee
 }
 
 .networks li.other {
-  height: 3.25rem;
-  font-family: inherit;
-  font-weight: 300;
-  padding: 8px;
-  letter-spacing: .008em;
-  color: #333;
-  border: 1px solid #0070c9;
-  -webkit-appearance: none;
-  background-color: #fff;
-  line-height: 1.5294717647;
-  margin: 0;
-  font-synthesis: none;
-  -moz-font-feature-settings: 'kern';
-  box-sizing: border-box;
-  width: 100%;
-  text-align: center
+height:3.25rem;
+font-family:inherit;
+font-weight:300;
+padding:8px;
+letter-spacing:.008em;
+color:#333;
+border:1px solid #0070c9;
+background-color:#fff;
+line-height:1.5294717647;
+margin:0;
+box-sizing:border-box;
+width:100%;
+text-align:center
 }
 
 .nonetworks {
-  text-align: center;
-  margin: 1em 0
+text-align:center;
+margin:1em 0
 }
 
 .field {
-  margin-bottom: .5em
+margin-bottom:.5em
 }
 
 .field.required label::before {
-  content: "*";
-  color: red
+content:"*";
+color:red
 }
 
 .logo {
-  border-radius: 10px;
-  border: 2px solid #777;
-  width: 70px;
-  height: 70px;
-  margin: 70px auto
+border-radius:10px;
+border:2px solid #777;
+width:70px;
+height:70px;
+margin:70px auto
 }
 
 .special {
-  font-size: 120px;
-  color: #ff9d0a;
-  margin-top: -22px;
-  margin-left: -15px
+font-size:90px;
+color:#ff9d0a;
+margin-top:-30px;
+margin-bottom:auto;
+text-align:center
 }
     </style>
-
   </head>
   <body>
     <div class="container">
       <div class="logo">
-        <h1 class="special">&#8980;</h1>
+        <div class="special">&#8980;</div>
       </div>
       <!-- part HTML_SETTINGS_CUSTOM_HTML -->
       <!-- {{ custom_html|safe }} -->
       <!-- part HTML_SETTINGS_BODY -->
       <h1>Network setup assistant</h1>
-      <p>You can use the network setup assistant utility to create a new wireless network connection for your ESP XXX Module. The network setup assistant guides you through the steps necessary to connect to your network. You can select a network SSID found
-        by the network setup assistant or add a hidden SSID trough custom network settings. Then you only need to add corresponding password.</p>
+      <p>You can use the network setup assistant utility to create a new wireless network connection for your ESP XXXX-X Module.</p>
       <form action="/settings" method="get">
         <input type="submit" id="refresh" value="&#x2315; Search"/>
       </form>
@@ -208,7 +194,6 @@ input[type=submit][disabled] {
         <div class="nonetworks" style="display: none;">
           No networks found
         </div>
-
         <ul id="networks" class="networks">
           <!-- part HTML_NETWORK_ITEM -->
           {% for network in networks %}
@@ -217,60 +202,60 @@ input[type=submit][disabled] {
           <!-- part HTML_SETTINGS_FOOTER -->
           <li class="other">Custom network settings</li>
         </ul>
-
         <div class="field required ssid" style="display: none;">
           <label for="ssid">
             SSID:</label>
           <input type="text" id="ssid" name="ssid" placeholder=" Type your network name here."/>
         </div>
-
         <div class="field required password" style="display: none;">
           <label for="password">Password:</label>
           <input type="password" id="password" name="password" placeholder=" &#x25CF;&#x25CF;&#x25CF;&#x25CF;&#x25CF;&#x25CF;&#x25CF;&#x25CF;&#x25CF;"/>
         </div>
-
         <input type="submit" id="join" value="Join" disabled="disabled"/>
       </form>
     </div>
-    <script>
+    <script >
       var ssid_field,
-        password_block,
-        password_field,
-        join_button;
+          password_block,
+          password_field,
+          join_button;
 
-      networks_block = document.getElementById('networks');
-      ssid_block = document.querySelector('.field.ssid');
-      ssid_field = document.getElementById('ssid');
-      password_block = document.querySelector('.field.password');
-      password_field = document.getElementById('password');
-      join_button = document.getElementById('join');
+  networks_block = document.getElementById('networks');
+  ssid_block = document.querySelector('.field.ssid');
+  ssid_field = document.getElementById('ssid');
+  password_block = document.querySelector('.field.password');
+  password_field = document.getElementById('password');
+  join_button = document.getElementById('join');
 
-      function enable(e) {
-        e.disabled = '';
-      }
-      function disable(e) {
-        e.disabled = 'disabled';
-      }
-      function show(e) {
-        e.style.display = 'block';
-      }
-      function hide(e) {
-        e.style.display = 'none';
-      }
+  function enable(e) {
+      e.disabled = '';
+  }
 
-      function selectNetwork(e) {
-        let nets = document.querySelectorAll('ul.networks li');
-        for (var i = 0; i < nets.length; i++) {
+  function disable(e) {
+      e.disabled = 'disabled';
+  }
+
+  function show(e) {
+      e.style.display = 'block';
+  }
+
+  function hide(e) {
+      e.style.display = 'none';
+  }
+
+  function selectNetwork(e) {
+      let nets = document.querySelectorAll('ul.networks li');
+      for (var i = 0; i < nets.length; i++) {
           nets[i].classList.remove('selected');
-        }
-        e.classList.add('selected');
       }
+      e.classList.add('selected');
+  }
 
-      var nets,
-        i;
-      nets = document.querySelectorAll('ul.networks li.unsecure');
-      for (i = 0; i < nets.length; i++) {
-        nets[i].onclick = function (event) {
+  var nets,
+      i;
+  nets = document.querySelectorAll('ul.networks li.unsecure');
+  for (i = 0; i < nets.length; i++) {
+      nets[i].onclick = function (event) {
           event.preventDefault();
           selectNetwork(this);
           ssid_field.value = this.innerText;
@@ -279,12 +264,12 @@ input[type=submit][disabled] {
           disable(password_field);
           password_field.value = '';
           enable(join_button);
-        }
       }
+  }
 
-      nets = document.querySelectorAll('ul.networks li.secure');
-      for (i = 0; i < nets.length; i++) {
-        nets[i].onclick = function (event) {
+  nets = document.querySelectorAll('ul.networks li.secure');
+  for (i = 0; i < nets.length; i++) {
+      nets[i].onclick = function (event) {
           event.preventDefault();
           selectNetwork(this);
           ssid_field.value = this.innerText;
@@ -293,15 +278,15 @@ input[type=submit][disabled] {
           show(password_block);
           disable(join_button);
           password_block.classList.add('required');
-        }
       }
+  }
 
-      nets = document.querySelectorAll('ul.networks li.other');
-      for (i = 0; i < nets.length; i++) {
-        nets[i].onclick = function (event) {
+  nets = document.querySelectorAll('ul.networks li.other');
+  for (i = 0; i < nets.length; i++) {
+      nets[i].onclick = function (event) {
           event.preventDefault();
           if (this.classList.contains('selected'))
-            return;
+              return;
 
           selectNetwork(this);
           ssid_field.value = "";
@@ -311,31 +296,29 @@ input[type=submit][disabled] {
           enable(password_field);
           disable(join_button);
           password_block.classList.remove('required');
-        }
       }
+  }
 
-      if (document.querySelectorAll('ul.networks li').length == 1) {
-        show(document.querySelector('.nonetworks'));
-        hide(networks_block);
-        show(ssid_block);
-        show(password_block);
-        password_block.classList.remove('required');
-      }
+  if (document.querySelectorAll('ul.networks li').length == 1) {
+      show(document.querySelector('.nonetworks'));
+      hide(networks_block);
+      show(ssid_block);
+      show(password_block);
+      password_block.classList.remove('required');
+  }
 
-      let s = ssid_field;
-      let p = password_field;
-      s.onchange = s.onkeydown = s.onpaste = s.oninput = p.onchange = p.onkeydown = p.onpaste = p.oninput = function (event) {
-        var f = enable;
-        if (ssid_block.classList.contains('required') && ssid_field.value == '') {
-          f = disable;
-        }
-        if (password_block.classList.contains('required') && password_field.value == '') {
-          f = disable;
-        }
+  let s = ssid_field;
+  let p = password_field;
+  s.onchange = s.onkeydown = s.onpaste = s.oninput = p.onchange = p.onkeydown = p.onpaste = p.oninput = function (event) {
+          var f = enable;
+          if (ssid_block.classList.contains('required') && ssid_field.value == '') {
+              f = disable;
+          }
+          if (password_block.classList.contains('required') && password_field.value == '') {
+              f = disable;
+          }
 
-        f(join_button);
-      }
-    </script>
-
+          f(join_button);
+      } </script>
   </body>
 </html>
