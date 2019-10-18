@@ -34,6 +34,12 @@ accessory initializiation.
         wifi_config_init2("my-accessory", "my-password", on_wifi_event);
     }
 
+# Custom HTML
+
+If you want a custom look, you can provide your own HTML for WiFi settings page.
+To do that, in your project's Makefile define variable WIFI_CONFIG_INDEX_HTML with
+path to your custom HTML file.
+
 # UI Development
 
 UI content is located in content/index.html (which is actually Jinja2 template).
@@ -58,3 +64,9 @@ output blocks (`{{ }}`) are replaced with `%s`. HTML_SETTINGS_HEADER and
 HTML_SETTINGS_FOOTER parts are output as-is while HTML_NETWORK_ITEM is assumed to
 have two `%s` placeholders, first of which will be "secure" or "unsecure" and
 second one - name of a WiFi network.
+
+To run server against your custom HTML, set environment variable
+WIFI_CONFIG_INDEX_HTML before your run tools/server.py:
+
+    export WIFI_CONFIG_INDEX_HTML=my_wifi_config.html
+    path/to/your/wifi-config/tools/server.py

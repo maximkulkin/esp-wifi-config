@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from collections import namedtuple
-from flask import Flask, render_template, request
+from flask import Flask, render_template, render_template_string, request
 import os
 import os.path
 
@@ -20,7 +20,7 @@ WIFI_NETWORKS = [
 ]
 
 
-base_path = os.getcwd()
+base_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..')
 app = Flask(
     __name__,
     static_folder=os.path.join(base_path, 'content'),
@@ -40,8 +40,17 @@ def ternary(x, true, false):
     return true if x else false
 
 
-@app.route('/settings', methods=['GET'])
-def get_settings():
+def _render_settings(networks):
+    if 'WIFI_CONFIG_INDEX_HTML' in os.environ:
+        with open(os.environ['WIFI_CONFIG_INDEX_HTML']) as f:
+            template = f.read()
+
+        return render_template_string(
+            template,
+            networks=networks,
+            custom_html=get_custom_html(),
+        )
+
     return render_template(
         'index.html',
         networks=WIFI_NETWORKS,
@@ -49,13 +58,15 @@ def get_settings():
     )
 
 
+
+@app.route('/settings', methods=['GET'])
+def get_settings():
+    return _render_settings(WIFI_NETWORKS)
+
+
 @app.route('/settings0', methods=['GET'])
 def get_settings0():
-    return render_template(
-        'index.html',
-        networks=[],
-        custom_html=get_custom_html(),
-    )
+    return _render_settings([])
 
 
 @app.route('/settings', methods=['POST'])

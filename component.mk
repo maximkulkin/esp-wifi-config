@@ -27,10 +27,13 @@ ifdef WIFI_CONFIG_DISCONNECTED_MONITOR_INTERVAL
 wifi_config_CFLAGS += -DWIFI_CONFIG_DISCONNECTED_MONITOR_INTERVAL=$(WIFI_CONFIG_DISCONNECTED_MONITOR_INTERVAL)
 endif
 
+ifndef WIFI_CONFIG_INDEX_HTML
+WIFI_CONFIG_INDEX_HTML = $(wifi_config_ROOT)/content/index.html
+endif
+
 $(wifi_config_OBJ_DIR)/src/wifi_config.o: $(wifi_config_OBJ_DIR)/content/index.html.h
 
-$(wifi_config_OBJ_DIR)%.html.h: $(wifi_config_ROOT)%.html
+$(wifi_config_OBJ_DIR)/content/index.html.h: $(WIFI_CONFIG_INDEX_HTML)
 	$(vecho "Embed %<")
 	$(Q) mkdir -p $(@D)
 	$(Q) $(wifi_config_ROOT)/tools/embed.py $< > $@
-
