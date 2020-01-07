@@ -6,6 +6,7 @@
 #include <esplibs/libmain.h>
 #include <espressif/esp_common.h>
 #include <lwip/sockets.h>
+#include <lwip/dhcp.h>
 
 #include <semphr.h>
 
@@ -49,6 +50,7 @@ typedef struct {
     char *ssid_prefix;
     char *password;
     char *custom_html;
+    char *custom_hostname;
     void (*on_wifi_ready)();  // deprecated
     void (*on_event)(wifi_config_event_t);
 
@@ -625,6 +627,16 @@ static void wifi_config_softap_stop() {
 
 
 static void wifi_config_monitor_callback(void *arg) {
+    struct netif *netif = sdk_system_get_netif(STATION_IF);
+    if (netif && !netif->hostname && context->custom_hostname) {
+        LOCK_TCPIP_CORE();
+        dhcp_release_and_stop(netif);
+        netif->hostname = context->custom_hostname;
+        dhcp_start(netif);
+        UNLOCK_TCPIP_CORE();
+        
+        INFO("Hostname: %s", context->custom_hostname);
+    }	
     if (sdk_wifi_station_get_connect_status() == STATION_GOT_IP) {
         if (sdk_wifi_get_opmode() == STATION_MODE && !context->first_time)
             return;
@@ -766,7 +778,7 @@ void wifi_config_init(const char *ssid_prefix, const char *password, void (*on_w
 
 
 void wifi_config_init2(const char *ssid_prefix, const char *password,
-                       void (*on_event)(wifi_config_event_t))
+                       void (*on_event)(wifi_config_event_t),const char *custom_hostname)
 {
     INFO("Initializing WiFi config");
     if (password && strlen(password) < 8) {
@@ -780,7 +792,11 @@ void wifi_config_init2(const char *ssid_prefix, const char *password,
     context->ssid_prefix = strndup(ssid_prefix, 33-7);
     if (password)
         context->password = strdup(password);
+    
+   if (custom_hostname)
+       context->custom_hostname = strdup(custom_hostname);
 
+	
     context->on_event = on_event;
 
     wifi_config_start();
