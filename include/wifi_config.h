@@ -6,7 +6,7 @@ typedef enum {
 } wifi_config_event_t;
 
 void wifi_config_init(const char *ssid_prefix, const char *password, void (*on_wifi_ready)());
-void wifi_config_init2(const char *ssid_prefix, const char *password, void (*on_event)(wifi_config_event_t));
+void wifi_config_init2(const char *ssid_prefix, const char *password, void (*on_event)(wifi_config_event_t), const char *custom_hostname);
 
 void wifi_config_reset();
 void wifi_config_get(char **ssid, char **password);
