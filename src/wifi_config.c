@@ -63,11 +63,14 @@ static wifi_config_context_t *context = NULL;
 
 typedef struct _client {
     int fd;
+    bool disconnected;
 
     http_parser parser;
     endpoint_t endpoint;
     uint8_t *body;
     size_t body_length;
+
+    struct _client *next;
 } client_t;
 
 
@@ -392,6 +395,13 @@ static void http_task(void *arg) {
     bind(listenfd, (struct sockaddr*)&serv_addr, sizeof(serv_addr));
     listen(listenfd, 2);
 
+    client_t *clients = NULL;
+
+    fd_set fds;
+    int max_fd = listenfd;
+
+    FD_SET(listenfd, &fds);
+
     char data[64];
 
     bool running = true;
@@ -404,48 +414,107 @@ static void http_task(void *arg) {
             }
         }
 
-        int fd = accept(listenfd, (struct sockaddr *)NULL, (socklen_t *)NULL);
-        if (fd < 0) {
-            vTaskDelay(500 / portTICK_PERIOD_MS);
+        fd_set read_fds;
+        memcpy(&read_fds, &fds, sizeof(read_fds));
+
+        struct timeval timeout = { 1, 0 }; // 1 second timeout
+        int triggered_nfds = lwip_select(max_fd + 1, &read_fds, NULL, NULL, &timeout);
+
+        if (triggered_nfds <= 0)
             continue;
+
+        if (FD_ISSET(listenfd, &read_fds)) {
+            int fd = accept(listenfd, (struct sockaddr *)NULL, (socklen_t *)NULL);
+            if (fd > 0) {
+                const struct timeval timeout = { 2, 0 }; /* 2 second timeout */
+                setsockopt(fd, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout));
+
+                const int yes = 1; /* enable sending keepalive probes for socket */
+                setsockopt(fd, SOL_SOCKET, SO_KEEPALIVE, &yes, sizeof(yes));
+
+                const int interval = 5; /* 30 sec between probes */
+                setsockopt(fd, IPPROTO_TCP, TCP_KEEPINTVL, &interval, sizeof(interval));
+
+                const int maxpkt = 4; /* Drop connection after 4 probes without response */
+                setsockopt(fd, IPPROTO_TCP, TCP_KEEPCNT, &maxpkt, sizeof(maxpkt));
+
+                client_t *client = client_new();
+                client->fd = fd;
+                client->next = clients;
+
+                clients = client;
+
+                FD_SET(fd, &fds);
+                if (fd > max_fd)
+                    max_fd = fd;
+            }
+
+            triggered_nfds--;
         }
 
-        const struct timeval timeout = { 2, 0 }; /* 2 second timeout */
-        setsockopt(fd, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout));
+        client_t *c = clients;
+        while (c && triggered_nfds) {
+            if (FD_ISSET(c->fd, &read_fds)) {
+                triggered_nfds--;
 
-        client_t *client = client_new();
-        client->fd = fd;
-
-        for (;;) {
-            int data_len = lwip_read(client->fd, data, sizeof(data));
-            if (data_len == 0) {
-                break;
+                int data_len = lwip_read(c->fd, data, sizeof(data));
+                if (data_len <= 0) {
+                    DEBUG("Client %d disconnected", c->fd);
+                    c->disconnected = true;
+                } else {
+                    DEBUG("Client %d got %d incomming data", c->fd, data_len);
+                    http_parser_execute(
+                        &c->parser, &wifi_config_http_parser_settings,
+                        data, data_len
+                    );
+                }
             }
 
-            if (data_len > 0) {
-                DEBUG("Got %d incomming data", data_len);
+            c = c->next;
+        }
 
-                http_parser_execute(
-                    &client->parser, &wifi_config_http_parser_settings,
-                    data, data_len
-                );
-            }
+        while (clients && clients->disconnected) {
+            c = clients;
+            clients = clients->next;
 
-            if (xTaskNotifyWait(0, 1, &task_value, 0) == pdTRUE) {
-                if (task_value) {
-                    running = false;
-                    break;
+            FD_CLR(c->fd, &fds);
+            lwip_close(c->fd);
+            client_free(c);
+        }
+        if (clients) {
+            c = clients;
+
+            max_fd = listenfd;
+            if (c->fd > max_fd)
+                max_fd = c->fd;
+
+            while (c->next) {
+                if (c->next->fd > max_fd)
+                    max_fd = c->next->fd;
+
+                if (c->next->disconnected) {
+                    client_t *tmp = c->next;
+                    c->next = tmp->next;
+
+                    FD_CLR(tmp->fd, &fds);
+                    lwip_close(tmp->fd);
+                    client_free(tmp);
+                } else {
+                    c = c->next;
                 }
             }
         }
-
-        DEBUG("Client disconnected");
-
-        lwip_close(client->fd);
-        client_free(client);
     }
 
     INFO("Stopping HTTP server");
+
+    while (clients) {
+        client_t *c = clients;
+        clients = c->next;
+
+        lwip_close(c->fd);
+        client_free(c);
+    }
 
     lwip_close(listenfd);
     vTaskDelete(NULL);
