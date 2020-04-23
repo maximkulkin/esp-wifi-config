@@ -15,7 +15,7 @@ def gen_embedded(content):
     def process_part(part):
         return "\n".join(
             "\"" + line.lstrip().replace('"', '\\"') + "\""
-            for line in part.split("\n")
+            for line in part.splitlines()
             if line.strip()
         )
 
