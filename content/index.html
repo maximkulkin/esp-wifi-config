@@ -1,0 +1,441 @@
+<!-- part HTML_SETTINGS_HEADER -->
+<!DOCTYPE html>
+<html>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<head>
+  <title>Life Cycle Manager 2</title>
+  <style type="text/css">
+    html,
+    input {
+      font-family: "SF Pro Text", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+      font-size: 0.9em;
+      text-align: justify;
+      background-color: #1c1c1e;
+      color: #f5f5f7;
+      line-height: 1.14286;
+      letter-spacing: .007em;
+    }
+
+    p {
+      font-size: 1.0em;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+      font-weight: 700;
+      text-align: center;
+
+    }
+
+    body .container {
+      width: 77vw;
+      margin: 0 auto;
+      padding: 7vw;
+      align-content: center;
+    }
+
+    label {
+      display: block;
+    }
+
+    select {
+      font-size: 30px;
+    }
+
+    input[type=checkbox] {
+      height: 30px;
+    }
+
+    input[type=text],
+    input[type=password] {
+      width: 100%;
+      box-sizing: border-box;
+      border: 1px solid black;
+      text-decoration: none;
+      border-radius: 7px;
+      color: white;
+      background-color: #333333;
+      margin: 0px auto;
+      display: block;
+      padding: 0.7em;
+      font-size: 1.3em;
+      font-weight: 200;
+      letter-spacing: .05em;
+    }
+
+    input[type=submit] {
+      width: 100%;
+      border: 1px solid black;
+      text-decoration: none;
+      border-radius: 7px;
+      color: white;
+      background-color: #4caf50;
+      margin: 0px auto;
+      display: block;
+      padding: 0.7em;
+      text-align: center;
+    }
+
+    input[type=submit]#refresh {
+      background-color: #0070c9;
+      background-position: calc(50% - 50px) 50%;
+      font-size: 1.3em;
+      font-weight: 200;
+      letter-spacing: .05em;
+      color: #C0C0C0;
+      background-size: 1.11111rem 1.11111rem;
+      background-repeat: no-repeat;
+      background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg width='48' height='49' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M47.77 46.438L33.455 32.123c3.087-3.356 4.99-7.82 4.99-12.73 0-10.386-8.45-18.837-18.837-18.837S.77 9.006.77 19.394c0 10.388 8.451 18.84 18.838 18.84 4.43 0 8.499-1.547 11.719-4.114l14.38 14.38 2.063-2.062zM3.688 19.394c0-8.779 7.142-15.92 15.92-15.92 8.779 0 15.92 7.141 15.92 15.92 0 8.781-7.141 15.923-15.92 15.923-8.778 0-15.92-7.142-15.92-15.923z' stroke='silver' fill='silver' fill-rule='evenodd'/%3E%3C/svg%3E");
+      z-index: 2;
+    }
+
+
+    input[type=submit]#join {
+      background-color: #4caf50;
+      font-size: 1.3em;
+      font-weight: 200;
+      letter-spacing: .05em;
+      color: #2c2c2e;
+    }
+
+    input[type=submit][disabled] {
+      color: #aaaaaa;
+      background-color: #d1d1d6 !important;
+    }
+
+    .networks {
+      padding: 0;
+      list-style: none;
+      margin: 1em 1em;
+
+    }
+
+    .networks li {
+      text-align: left;
+      font-size: 1.3em;
+      font-weight: 200;
+      letter-spacing: .07em;
+      padding: 0.25em;
+      margin-bottom: 0.25em;
+
+
+
+
+    }
+
+    .networks li.secure::after {
+
+      content:
+        url("data:image/svg+xml;charset=utf-8,%3Csvg width='14' height='12' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1.216 12.3h6.2c.8 0 1.2-.4 1.2-1.3V6.2c0-.9-.4-1.2-1.2-1.3V3.4c0-2.1-1.3-3.4-3.1-3.4s-3.2 1.3-3.2 3.4v1.5c-.8 0-1.1.4-1.1 1.3V11c0 .9.4 1.3 1.2 1.3zm.5-8.9c0-1.7 1.1-2.8 2.6-2.8s2.6 1.1 2.6 2.8v1.5h-5.2V3.4z' stroke='#f2f2f7' fill='#f2f2f7' fill-rule='evenodd'/%3E%3C/svg%3E")
+        url("data:image/svg+xml;charset=utf-8,%3Csvg width='20' height='12' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M15.372 3.7c.2-.1.2-.4 0-.6-2-2-4.7-3.1-7.6-3.1-3 0-5.7 1.1-7.6 3.1-.2.2-.2.4 0 .6.2.1.4.1.5-.1 1.8-1.9 4.3-2.9 7.1-2.9s5.2 1.1 7.1 2.9c.1.2.4.2.5.1zm-2.2 2.4c.2-.2.2-.4 0-.6-1.4-1.4-3.3-2.2-5.4-2.2-2.1 0-4 .8-5.4 2.2-.2.2-.2.4 0 .6.2.1.4.1.5-.1 1.2-1.3 3-2 4.9-2 1.9 0 3.6.7 4.9 2 .2.1.4.2.5.1zm-2.3 2.2c.2-.2.2-.4 0-.6-.8-.8-1.9-1.2-3.1-1.2-1.2 0-2.3.4-3.1 1.2-.2.2-.2.4 0 .6.2.1.4.1.5-.1.7-.6 1.6-1 2.6-1s1.9.3 2.6 1c.1.2.3.3.5.1zm-2.1 2.8c0-.6-.5-1.1-1.1-1.1-.6 0-1.1.5-1.1 1.1 0 .6.5 1.1 1.1 1.1.6-.1 1.1-.6 1.1-1.1z' stroke='#f2f2f7' fill='#f2f2f7' fill-rule='evenodd'/%3E%3C/svg%3E");
+      float: right;
+    }
+
+
+    .networks li.unsecure::after {
+      content:
+        url("data:image/svg+xml;charset=utf-8,%3Csvg width='14' height='12' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0h8.6v12.3H0z'  fill='#66000000' fill-rule='evenodd'/%3E%3C/svg%3E") url("data:image/svg+xml;charset=utf-8,%3Csvg width='20' height='12' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M15.372 3.7c.2-.1.2-.4 0-.6-2-2-4.7-3.1-7.6-3.1-3 0-5.7 1.1-7.6 3.1-.2.2-.2.4 0 .6.2.1.4.1.5-.1 1.8-1.9 4.3-2.9 7.1-2.9s5.2 1.1 7.1 2.9c.1.2.4.2.5.1zm-2.2 2.4c.2-.2.2-.4 0-.6-1.4-1.4-3.3-2.2-5.4-2.2-2.1 0-4 .8-5.4 2.2-.2.2-.2.4 0 .6.2.1.4.1.5-.1 1.2-1.3 3-2 4.9-2 1.9 0 3.6.7 4.9 2 .2.1.4.2.5.1zm-2.3 2.2c.2-.2.2-.4 0-.6-.8-.8-1.9-1.2-3.1-1.2-1.2 0-2.3.4-3.1 1.2-.2.2-.2.4 0 .6.2.1.4.1.5-.1.7-.6 1.6-1 2.6-1s1.9.3 2.6 1c.1.2.3.3.5.1zm-2.1 2.8c0-.6-.5-1.1-1.1-1.1-.6 0-1.1.5-1.1 1.1 0 .6.5 1.1 1.1 1.1.6-.1 1.1-.6 1.1-1.1z' stroke='#f2f2f7' fill='#f2f2f7' fill-rule='evenodd'/%3E%3C/svg%3E");
+      float: right;
+    }
+
+    .networks li.selected {
+      background-color: #1c1c1e;
+      border: 1px solid black;
+      text-decoration: none;
+      border-radius: 7px;
+      background: rgba(255, 255, 255, 0.37);
+    }
+
+    .networks li:hover {
+      background-color: #1c1c1e;
+      border: 1px solid black;
+      text-decoration: none;
+      border-radius: 7px;
+      background: rgba(255, 255, 255, 0.37);
+    }
+
+    .nonetworks {
+      text-align: center;
+      margin-bottom: 1em;
+    }
+
+    .field {
+      margin-bottom: 0.5em;
+    }
+
+    label {
+      text-align: left;
+      font-size: 1.3em;
+      font-weight: 200;
+      letter-spacing: .07em;
+      padding: 0.25em;
+      margin-bottom: 0.25em;
+    }
+
+    .field.required label::before {
+      content: "*";
+      color: red;
+    }
+
+    input.apple-switch {
+      position: relative;
+      -webkit-appearance: none;
+      outline: none;
+      width: 35px;
+      height: 20px;
+      background-color: #fff;
+      border: 0px solid #48484a;
+      border-radius: 49px;
+      box-shadow: inset -15px 0 0 0 #48484a;
+      float: right;
+    }
+
+    input.apple-switch:after {
+      content: "";
+      position: absolute;
+      top: 1px;
+      left: 1px;
+      background: transparent;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+
+
+    }
+
+    input.apple-switch:checked {
+      box-shadow: inset 15px 0 0 0 #34c759;
+      border-color: #48484a;
+    }
+
+    input.apple-switch:checked:after {
+      left: 20px;
+
+
+    }
+
+    select {
+      width: 2.2em;
+      font-size: 0.9em;
+      font-weight: 200;
+      letter-spacing: .05em;
+      border-style: none;
+      height: 28px;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+      float: right;
+      background-color: #333333;
+      color: #f5f5f7;
+      padding-left: calc(50% - 50px) 50%;
+
+    }
+    .footer {
+      margin-top: 10em;
+      text-align: center;
+      font-size: 0.9em;
+      font-weight: 100;
+      line-height: 1.3em;
+      letter-spacing: .05em;
+    }
+    hr.thin {
+height: 1px;
+border: 0;
+color: #333;
+background-color: #333;
+width: 100%;
+}
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <H1>Life Cycle Manager <sup>2</sup></H1>
+    <br>
+    <form action="/settings" method="get">
+      <input type="submit" id="refresh" value="Search" />
+    </form>
+    <br>
+
+    <form action="/settings" method="post">
+      <ul class="networks">
+        <!-- part HTML_NETWORK_ITEM -->
+        {% for network in networks %}
+        <li class="{{ network.secure | ternary('secure', 'unsecure') }}">{{ network.ssid }}</li>
+        {% endfor %}
+        <!-- part HTML_SETTINGS_MIDDLE -->
+      </ul>
+
+      <div class="nonetworks" style="display: none;">
+        No networks found
+      </div>
+      <br>
+      <div class="field required ssid" style="display: none;">
+        <label for="ssid">SSID:</label>
+        <input type="text" id="ssid" name="ssid" placeholder="Type your SSID here." />
+      </div>
+
+      <div class="field required password" style="display: none;">
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" placeholder="●●●●●●●●●●●●" />
+      </div>
+
+
+
+
+      <!-- part HTML_SETTINGS_OTAPARAMETERS -->
+<br><br>
+<hr class="thin">
+      <br><br>
+      <H1>Repository</H1>
+      <div class="field otarepo" style="display: block;">
+        <label for="otarepo">Repository location:</label>
+        <input type="text" id="otarepo" name="otarepo" placeholder="your_repository_name/demo/" />
+      </div>
+      <div class="field otafile" style="display: block;">
+        <label for="otafile">Binary file name:</label>
+        <input type="text" id="otafile" name="otafile" placeholder="main.bin" />
+      </div>
+      <div class="form-checkbox unchecked">
+        <br><br>
+        <hr class="thin">
+              <br><br>
+        <H1>Settings</H1>
+
+        <label>
+          Use Pre-Release firmware
+          <input name="otabeta" type="hidden" value="0" />
+          <input class="apple-switch" type="checkbox" value="1" name="otabeta" id="otabeta" />
+        </label>
+      </div>
+
+      <!-- part HTML_SETTINGS_OTASERVER -->
+
+      <div class="field led_pin" style="display: block;">
+        <div><label for="led_pol">
+            Led connected to GND
+            <input name="led_pol" type="hidden" value="0" />
+            <input class="apple-switch" type="checkbox" value="1" name="led_pol" id="led_pol" />
+          </label><label for="led_pin">
+            Led connected to GPIO Pin
+            <select name="led_pin" id="led_pin">
+              <option value="n">X</option>
+              <option value="2">2</option>
+              <option value="4">4</option>
+              <option value="5">5</option>
+              <option value="12">12</option>
+              <option value="13">13</option>
+              <option value="14">14</option>
+            </select>
+
+          </label></div>
+      </div>
+
+      <br><br>
+      <hr class="thin">
+            <br><br>
+      <h1>Server configuration</h1>
+      <br>
+      <br>
+      <div class="field otasrvr" style="display: block;">
+        <label for="otasrvr">Repository location on custom Server:</label>
+        <input type="text" id="otasrvr" name="otasrvr" placeholder="your.domain.com/demo/" />
+      </div>
+      <!-- part HTML_SETTINGS_FOOTER -->
+      <br><br>
+      <hr class="thin">
+            <br><br>
+      <input type="submit" id="join" value="Join" disabled />
+    </form>
+    <div class=footer> <sup>©</sup> 2018 - 2020 Life-Cycle-Manager (LCM) - HomeAccessoryKid.<br>
+      UI Design <sup>©</sup> 2020 Achim Pieters | StudioPieters<sup>®</sup></div>
+  </div>
+  <script>
+    var ssid_field, password_block, password_field, join_button;
+
+    ssid_block = document.querySelector('.field.ssid');
+    ssid_field = document.getElementById('ssid');
+    password_block = document.querySelector('.field.password');
+    password_field = document.getElementById('password');
+    join_button = document.getElementById('join');
+
+    if (document.querySelectorAll('ul.networks li').length == 0) {
+      show(document.querySelector('.nonetworks'));
+      show(ssid_block);
+      show(password_block);
+      password_block.classList.remove('required');
+    }
+
+    function enable(e) {
+      e.disabled = '';
+    }
+
+    function disable(e) {
+      e.disabled = 'disabled';
+    }
+
+    function show(e) {
+      e.style.display = 'block';
+    }
+
+    function hide(e) {
+      e.style.display = 'none';
+    }
+
+    function selectNetwork(e) {
+      let nets = document.querySelectorAll('ul.networks li');
+      for (var i = 0; i < nets.length; i++) {
+        nets[i].classList.remove('selected');
+      }
+      e.classList.add('selected');
+    }
+
+    var nets, i;
+    nets = document.querySelectorAll('ul.networks li.unsecure');
+    for (i = 0; i < nets.length; i++) {
+      nets[i].onclick = function(event) {
+        event.preventDefault();
+        selectNetwork(this);
+        ssid_field.value = this.innerHTML;
+        hide(password_block);
+        disable(password_field);
+        password_field.value = '';
+        enable(join_button);
+      }
+    }
+
+    nets = document.querySelectorAll('ul.networks li.secure');
+    for (i = 0; i < nets.length; i++) {
+      nets[i].onclick = function(event) {
+        event.preventDefault();
+        selectNetwork(this);
+        ssid_field.value = this.innerHTML;
+        enable(password_field);
+        show(password_block);
+        disable(join_button);
+      }
+    }
+
+    let s = ssid_field;
+    let p = password_field;
+    s.onchange = s.onkeydown = s.onpaste = s.oninput =
+      p.onchange = p.onkeydown = p.onpaste = p.oninput = function(event) {
+        var f = enable;
+        if (ssid_block.classList.contains('required') && ssid_field.value == '') {
+          f = disable;
+        }
+        if (password_block.classList.contains('required') && password_field.value == '') {
+          f = disable;
+        }
+
+        f(join_button);
+      }
+  </script>
+</body>
+
+</html>
