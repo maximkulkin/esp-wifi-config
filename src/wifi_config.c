@@ -682,6 +682,8 @@ static void wifi_config_softap_start() {
 
     dns_start();
     http_start();
+    if (context->on_event)
+        context->on_event(WIFI_CONFIG_AP_START);
 }
 
 
@@ -690,6 +692,8 @@ static void wifi_config_softap_stop() {
     dns_stop();
     http_stop();
     sdk_wifi_set_opmode(STATION_MODE);
+    if (context->on_event)
+        context->on_event(WIFI_CONFIG_AP_STOP);
 }
 
 
