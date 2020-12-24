@@ -374,12 +374,13 @@ static void http_task(void *arg) {
     INFO("Starting HTTP server");
 
     struct sockaddr_in serv_addr;
-    int listenfd = socket(AF_INET, SOCK_STREAM, 0);
+    int listenfd = socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
     memset(&serv_addr, '0', sizeof(serv_addr));
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
     serv_addr.sin_port = htons(WIFI_CONFIG_SERVER_PORT);
     int flags;
+    int enable = 1;
     if ((flags = lwip_fcntl(listenfd, F_GETFL, 0)) < 0) {
         ERROR("Failed to get HTTP socket flags");
         lwip_close(listenfd);
@@ -390,6 +391,11 @@ static void http_task(void *arg) {
         ERROR("Failed to set HTTP socket flags");
         lwip_close(listenfd);
         vTaskDelete(NULL);
+        return;
+    }
+    if (setsockopt(listenfd, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(enable)) < 0) {
+        ERROR("Error in setsockopt");
+        lwip_close(listenfd);
         return;
     }
     bind(listenfd, (struct sockaddr*)&serv_addr, sizeof(serv_addr));
