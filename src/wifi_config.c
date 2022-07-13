@@ -765,16 +765,23 @@ static int wifi_config_station_connect() {
     INFO("Connecting to %s", wifi_ssid);
 
     struct sdk_station_config sta_config;
-    memset(&sta_config, 0, sizeof(sta_config));
-    strncpy((char *)sta_config.ssid, wifi_ssid, sizeof(sta_config.ssid));
-    sta_config.ssid[sizeof(sta_config.ssid)-1] = 0;
-    if (wifi_password)
-        strncpy((char *)sta_config.password, wifi_password, sizeof(sta_config.password));
+    sdk_wifi_station_get_config(&sta_config);
+    //only have to set it if it is different
+    if (strcmp((char *)sta_config.ssid, wifi_ssid) || strcmp((char *)sta_config.password, wifi_password)) { 
+        memset(&sta_config, 0, sizeof(sta_config));
+        strncpy((char *)sta_config.ssid, wifi_ssid, sizeof(sta_config.ssid));
+        sta_config.ssid[sizeof(sta_config.ssid)-1] = 0;
+        if (wifi_password)
+            strncpy((char *)sta_config.password, wifi_password, sizeof(sta_config.password));
 
-    sdk_wifi_station_set_config(&sta_config);
-
+        sdk_wifi_station_set_config(&sta_config);
+    }
     sdk_wifi_station_connect();
-    sdk_wifi_station_set_auto_connect(true);
+    
+    //only have to set it if it is different
+    if (!sdk_wifi_station_get_auto_connect()) {
+        sdk_wifi_station_set_auto_connect(true);
+    }
 
     free(wifi_ssid);
     if (wifi_password)
